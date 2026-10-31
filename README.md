@@ -11,6 +11,7 @@
 - [`docs/experiment-protocol.md`](docs/experiment-protocol.md) — the first runnable experiment
 - [`docs/hardware.md`](docs/hardware.md) — the self-hosted compute cluster
 - [`docs/glossary.md`](docs/glossary.md) — key terms, plainly defined
+- [`docs/teams-by-stage.md`](docs/teams-by-stage.md) — the color-teams applied across the training loop, the model lifecycle, and AI history
 - [`ROADMAP.md`](ROADMAP.md) — phased build-out and the later layers
 
 ## I. The Core Idea
