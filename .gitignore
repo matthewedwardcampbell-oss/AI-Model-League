@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+
+# Environment / secrets
+.env
+*.key
+*.pem
+
+# Model weights & artifacts (large — keep out of git)
+*.safetensors
+*.bin
+*.gguf
+*.pt
+*.ckpt
+models/
+checkpoints/
+merged/
+data/
+runs/
+outputs/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

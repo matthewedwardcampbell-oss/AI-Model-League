@@ -5,6 +5,14 @@
 > The core (Sections I–IV) is the testable heart; the Grand Vision (V–VII) is
 > forward-looking. Feedback on the concept is the goal.
 
+## Repository Map
+
+- [`README.md`](README.md) — overview (this file)
+- [`docs/experiment-protocol.md`](docs/experiment-protocol.md) — the first runnable experiment
+- [`docs/hardware.md`](docs/hardware.md) — the self-hosted compute cluster
+- [`docs/glossary.md`](docs/glossary.md) — key terms, plainly defined
+- [`ROADMAP.md`](ROADMAP.md) — phased build-out and the later layers
+
 ## I. The Core Idea
 
 Conventional training optimizes a single model, and standard evolutionary methods
@@ -40,6 +48,8 @@ models sharing one base lineage.
 
 ## III. The First Experiment
 
+A cheap, runnable test. Full protocol in [`docs/experiment-protocol.md`](docs/experiment-protocol.md).
+
 1. Pull 4–6 small fine-tunes sharing one base (e.g., Mistral-7B family).
 2. Score each on a benchmark — the tournament.
 3. Merge the **bottom** cohort (hypothesis) and the **top** cohort (control).
@@ -49,22 +59,16 @@ models sharing one base lineage.
 
 ## IV. Compute Substrate
 
-A self-hosted, sovereign cluster of reclaimed enterprise hardware.
+A self-hosted, sovereign cluster of reclaimed enterprise hardware. Detail in
+[`docs/hardware.md`](docs/hardware.md).
 
 1. **Host / storage node** (Dell R640) — always-on; runs orchestration, holds the model
    library, runs merges on CPU (merging is arithmetic, not training).
 2. **Compute / GPU-host node** (Dell R720, 2U) — higher core count; the chassis that can
    house a scoring GPU for in-house inference.
-3. Known hardware stress points (design constraints, not afterthoughts):
-   - **Instruction-set cliff** — without AVX2/AVX-512, inference can fall from ~10–15
-     tok/s to under 1.5. Verify vector support per node.
-   - **I/O lockup** — spinning disks under simultaneous multi-agent reads + logging
-     writes can queue-stall. Stage hot paths on SSD.
-   - **Hardware asymmetry** — unequal machines distort results. Neutralize with
-     turn-stepping ("chess-clock"), core pinning, and token-efficiency scoring so
-     outcomes reflect models, not metal.
-   - **Thermal / power** — continuous AVX load is a real BTU and wattage draw; off-peak
-     scheduling cuts cost.
+3. Known stress points (design constraints, not afterthoughts): the AVX2/AVX-512
+   instruction-set cliff, I/O lockup on spinning disks, hardware asymmetry between nodes,
+   and thermal/power load. See the hardware doc.
 
 ---
 
