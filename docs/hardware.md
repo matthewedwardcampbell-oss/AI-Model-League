@@ -19,14 +19,22 @@ per-token cloud meter.
 
 - Up to 2× Xeon E5-2600 v2 → up to **24 cores / 48 threads**; large DDR3 capacity;
   8–16 drive bays; iDRAC7.
-- **Role:** the heavier core count does batch work, and — crucially — the 2U chassis can
-  **house a scoring GPU** for in-house inference. This is the node that eventually ends
-  the cloud-GPU rental.
+- **Role:** the 2U chassis can **house a scoring GPU** for in-house inference — this is
+  the node that eventually ends the cloud-GPU rental. Note its core count is *batch
+  capacity, not CPU-math speed*: the E5-2600 **v2** is Ivy Bridge, which has AVX but
+  **no AVX2 and no AVX-512** (see the instruction-set cliff below). For anything
+  vectorized on CPU — including the merges — the R640 is the stronger node despite its
+  lower core count.
 
 ## II. Known Stress Points (design constraints, not afterthoughts)
 
-1. **Instruction-set cliff** — without AVX2/AVX-512 vector support, inference can collapse
-   from ~10–15 tok/s to under 1.5. Verify vector support per node.
+1. **Instruction-set cliff** — without AVX2/AVX-512 vector support, CPU inference can
+   collapse from ~10–15 tok/s to under 1.5. The two nodes sit on **opposite sides** of
+   this cliff, and it's the reverse of what the names suggest: the R640's Xeon Silver 4208
+   (Cascade Lake) has full **AVX-512**, while the R720's E5-2600 v2 (Ivy Bridge) tops out
+   at **AVX** — no AVX2. So the "storage" node is the vector monster and the "compute"
+   node is the weak one for CPU math. This is exactly why the merges live on the R640.
+   Verify per node (`grep -o 'avx[^ ]*' /proc/cpuinfo | sort -u`) before trusting either.
 2. **I/O lockup** — spinning SAS/SATA disks under simultaneous multi-agent reads and
    logging writes can queue-stall. Stage hot paths on SSD.
 3. **Hardware asymmetry** — teams running on unequal machines distort results. Neutralize

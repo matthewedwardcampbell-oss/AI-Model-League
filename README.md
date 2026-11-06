@@ -47,16 +47,27 @@ models sharing one base lineage.
    axes (reasoning, latency, token economy) instead of one benchmark scalar; the
    mechanism that protects diversity.
 
+**Known ceiling.** Merging only works within one base family, so the diversity this
+method can harvest is capped at *intra-family*. The most orthogonal failure modes often
+live across *different* base models — which weight arithmetic cannot combine. The
+complementarity available here therefore has a structural upper bound, named up front so
+a reviewer doesn't find it first.
+
 ## III. The First Experiment
 
 A cheap, runnable test. Full protocol in [`docs/experiment-protocol.md`](docs/experiment-protocol.md).
 
 1. Pull 4–6 small fine-tunes sharing one base (e.g., Mistral-7B family).
 2. Score each on a benchmark — the tournament.
-3. Merge the **bottom** cohort (hypothesis) and the **top** cohort (control).
-4. Re-score both offspring.
-5. **Win:** merged underdogs beat their parents. **Fail:** regression to the mean.
-   Either outcome is a real result.
+3. Build **three** merge arms: the **bottom** cohort paired for *complementary* failures
+   (the hypothesis); a **random** pair of losers (the control that isolates orthogonality
+   from merging-at-all); and the **top** cohort (the control that isolates *underdog* from
+   *elite*).
+4. Re-score all three offspring.
+5. **Win:** the complementary-loser merge beats its parents *and* clears the random-loser
+   merge. **Fail:** it regresses to the mean, or beats its parents by no more than the
+   random pair does — in which case the effect is "merging helps," not "orthogonality
+   helps." Either outcome is a real result.
 
 ## IV. Compute Substrate
 
@@ -99,26 +110,7 @@ pattern; each domain below fields its own tailored team.
 - **Purple** — lore-canon arbiter + balance synthesizer (merges nerf vs emergent-play
   models).
 
-### 2. Cybersecurity *(Defensive Research — Air-Gapped, Contained)*
-
-Framed strictly as contained, defensive research on a fully air-gapped range with no path
-to the open internet. Containment is the point; CFAA and dual-use proliferation risk are
-explicit constraints. This studies defense and containment — it is **not** a builder of
-autonomous attackers.
-
-- **Red** — contained vulnerability discovery + payload testing against designated
-  sandboxes only.
-- **Orange** — creative attack mutation; bypasses static pattern detection.
-- **Silver** — offensive containment at the hypervisor; enforces air-gap, kills rogue
-  egress, prevents lateral movement.
-- **Blue** — frontline defense; log analysis, real-time rules, automated patching.
-- **Green** — chaos injection (misconfigs, resource starvation, container restarts).
-- **Gold** — defensive invariant enforcement; blocks Blue "reward hacking" (no winning by
-  killing the server or deleting databases).
-- **Purple** — neutral arbiter; chess-clock stepping, breach/patch scoring, triggers
-  DARE/TIES merges between rounds.
-
-### 3. Macroeconomic & Planetary Climate Modeling *(AB-IAM)*
+### 2. Macroeconomic & Planetary Climate Modeling *(AB-IAM)*
 
 A bottom-up agent economy rather than top-down static equations (DSGE).
 
@@ -138,7 +130,7 @@ A bottom-up agent economy rather than top-down static equations (DSGE).
 - **Black** — exogenous shock engine (Cat-5 landfalls, droughts, choke-point blockades,
   sovereign defaults).
 
-### 4. Circular Resource Recovery & Social Enterprise *(Joy's Kitchen Hub)*
+### 3. Circular Resource Recovery & Social Enterprise *(Joy's Kitchen Hub)*
 
 - **Red** — feedstock arbitrage; takes clean waste streams for free/nominal cost, beating
   landfill gate fees at the point of origin.

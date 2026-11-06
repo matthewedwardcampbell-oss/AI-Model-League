@@ -31,28 +31,38 @@ fine-tunes). You can only merge checkpoints from the same family.
 2. **Score each on a benchmark** → rank them. This is the tournament.
 3. Take the **bottom 2–3 (losers)**; confirm their per-skill scorecards fail *differently*
    (see §IV).
-4. **Merge the losers** with mergekit — start with TIES or DARE.
-5. **Merge the top 2–3** as the **control group**.
-6. **Re-score both offspring** on the same benchmark.
+4. **Merge the complementary losers** with mergekit — start with TIES or DARE. *(hypothesis arm)*
+5. **Merge a random pair of losers** with the same method. *(control arm — isolates
+   orthogonality from the mere act of merging two models)*
+6. **Merge the top 2–3** as a second control. *(control arm — isolates underdog from elite)*
+7. **Re-score all three offspring** on the same benchmark, same settings.
 
 ## IV. Picking Complementary Losers
 
-- **The rigorous way:** measure the angle (cosine similarity) between two losers' task
-  vectors. Near-orthogonal = complementary.
-- **The practical proxy:** score each loser **per skill** (reasoning, writing, math,
-  instruction-following), not one overall grade. Pair the ones with **mirror-image
-  scorecards** — Loser A bombs what Loser B aces, and vice versa.
-- **Shortcut:** losers fine-tuned on *different data* tend to be naturally orthogonal —
-  seek variety on purpose.
+- **The primary signal — per-skill mirror scorecards.** Score each loser **per skill**
+  (reasoning, writing, math, instruction-following), not one overall grade. Pair the ones
+  with **mirror-image scorecards** — Loser A bombs what Loser B aces, and vice versa. This
+  is the measure that actually tracks complementary *capability*, so it leads.
+- **The sanity check — task-vector angle.** Cosine similarity between two losers' task
+  vectors; near-90° reads as orthogonal. Treat it as a check, not an oracle: in very high
+  dimensions almost *every* pair of vectors is already near-orthogonal, so a near-90°
+  reading is the default, not the signal. Use it to flag pairs that are suspiciously
+  *parallel* (redundant), not to certify that orthogonal ones are complementary.
+- **Shortcut:** losers fine-tuned on *different data* tend to fail differently — seek
+  variety on purpose.
 
 ## V. Reading the Result
 
-- **Win:** the merged losers beat their own parents (bonus if they rival the merged winners).
-- **Fail:** the loser-merge regresses to the mean — worse than either parent.
+- **Win:** the complementary-loser merge beats its own parents **and** clears the
+  random-loser merge (bonus if it rivals the merged winners).
+- **Fail:** it regresses to the mean, **or** it beats its parents by no more than the
+  random-loser merge does — meaning the effect was "merging two models helps," not
+  "orthogonality helps."
 
-Either outcome is a real, publishable result. The failure case is as informative as the
-success case, which is why the top-cohort control matters: it isolates whether *underdog*
-merging specifically does anything.
+Either outcome is a real, publishable result. The two controls are what make it a result
+at all: the **top-cohort** merge isolates *underdog* from *elite*, and the **random-loser**
+merge isolates *orthogonality* from the mere act of merging. Without the random arm, a win
+can't be attributed to the complementary-failure rule — which is the whole hypothesis.
 
 ## VI. Scope Discipline for Run #1
 
